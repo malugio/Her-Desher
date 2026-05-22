@@ -57,7 +57,7 @@ class player extends Phaser.Scene {
           this.game.room,
           this.game.localPlayer,
         );
-        this.scene.stop("alien");
+        this.scene.stop("player");
         this.scene.start("scene0");
       });
     this.alien.play("alien");

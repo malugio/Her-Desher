@@ -8,37 +8,6 @@ class scene0 extends Phaser.Scene {
     this.remotePlayers = [];
   }
 
-  preload() {
-    this.load.setPath("assets/");
-
-    this.load.tilemapTiledJSON("mars", "mars.json");
-
-    this.load.spritesheet("astronauta", "astronauta.png", {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-    this.load.spritesheet("monster", "monster.png", {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-
-    this.load.image("marte", "mars-tileset.png");
-
-    this.load.spritesheet("buttons", "buttons.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.audio("music", "music.mp3");
-    
-
-    this.load.plugin(
-      "rexvirtualjoystickplugin",
-      "../js/rexvirtualjoystickplugin.min.js",
-      true,
-    );
-  }
-
   create() {
     this.map = this.make.tilemap({ key: "mars" });
 
@@ -81,7 +50,6 @@ class scene0 extends Phaser.Scene {
       repeat: -1,
     });
 
-
     this.anims.create({
       key: "running-right",
       frames: this.anims.generateFrameNumbers("astronauta", {
@@ -91,7 +59,6 @@ class scene0 extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-
 
     this.anims.create({
       key: "running-left",
@@ -222,23 +189,31 @@ class scene0 extends Phaser.Scene {
           );
 
           if (!remotePlayer) {
-            remotePlayer = this.add
-              .sprite(state.astronauta.x, state.astronauta.y, "alien", 0)
+            let sprite = this.add.sprite(
+              state.astronauta.x,
+              state.astronauta.y,
+              "alien",
+              0,
+            );
             this.remotePlayers.push({
               id: state.astronauta.id,
-              sprite: remotePlayer,
+              sprite: sprite,
             });
+
+            remotePlayer = this.remotePlayers.find(
+              (p) => p.id === state.astronauta.id,
+            );
           }
 
-          remotePlayer.sprite.setPosition(state.astronauta.x, state.astronauta.y);
+          remotePlayer.sprite.setPosition(
+            state.astronauta.x,
+            state.astronauta.y,
+          );
+
           remotePlayer.sprite.setTexture(
             state.astronauta.texture,
             state.astronauta.frame,
           );
-
-
-
-          
         } catch (e) {
           console.log(this.remotePlayers);
           console.error("Error updating remote player:", e);
@@ -246,8 +221,6 @@ class scene0 extends Phaser.Scene {
       }
     });
   }
-  
-
 
   update() {
     if (

@@ -17,18 +17,16 @@ class preloader extends Phaser.Scene {
   preload() {
     this.load.setPath("assets/");
 
-    this.load.font("pixelify-sans", "pixelify-sans.ttf");
-
     this.load.image("room-background", "room-background.png");
-    
-    this.load.tilemapTiledJSON("mars ", "mars.json");
+
+    this.load.tilemapTiledJSON("mars", "mars.json");
     this.load.spritesheet("astronauta", "astronauta.png", {
       frameWidth: 64,
       frameHeight: 64,
     });
     this.load.spritesheet("astronauta", "astronauta.png", {
       frameWidth: 64,
-      frameHeight: 64
+      frameHeight: 64,
     });
 
     this.load.spritesheet("alien", "alien.png", {
@@ -42,7 +40,7 @@ class preloader extends Phaser.Scene {
     });
 
     this.load.image("marte", "mars-tileset.png");
-    
+
     this.load.spritesheet("buttons", "buttons.png", {
       frameWidth: 32,
       frameHeight: 32,
@@ -50,7 +48,7 @@ class preloader extends Phaser.Scene {
     this.load.audio("music", "music.mp3");
     this.load.audio("efeito", "efeito.mp3");
     this.load.audio("coin", "coin.mp3");
-    
+
     this.load.plugin(
       "rexvirtualjoystickplugin",
       "../js/rexvirtualjoystickplugin.min.js",
@@ -60,11 +58,11 @@ class preloader extends Phaser.Scene {
 
   create() {
     this.scene.stop("preloader");
-      if (this.game.room) {
-        this.scene.start("player");
-      } else {
-        this.scene.start("room");
-      }
+    if (this.game.room) {
+      this.scene.start("player");
+    } else {
+      this.scene.start("room");
+    }
   }
 }
 
