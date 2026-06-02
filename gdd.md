@@ -7,7 +7,6 @@ Por Giovana e Maria Luiza
 - Um mundo pós apocalíptico,marte após um colapso nuclear na terra
 - Se passa na temática de marte, um tom avermelhado e apocalíptico, feito de areia e rochas.
 - Os personagens tem armas “futurísticas” Armas a laser
-- Podem ser variadas as armas simples tambem, como uma simples espada para ajudar nas batalhas.
 
 ## Core Gameplay Mechanics Brief
 - Movimentação mais leve (gravidade menor)
@@ -44,20 +43,19 @@ Por Giovana e Maria Luiza
 - The Martian **Filme**
  
 ## The elevator Pitch
-Uma jovem engenheira cai em Marte após um acidente espacial e precisa sobreviver, explorar e reparar sua nave enquanto descobre que não está sozinha no planeta.
+Uma jovem engenheira cai em Marte após um acidente espacial e precisa sobreviver e explorar, enquanto descobre que não está sozinha no planeta.
 
 ### Project Description (Brief):
- O jogador controla uma jovem engenheira que sofre um pouso forçado em Marte, com recursos limitados, ela precisa explorar o planeta, coletar água e cristais energéticos, derrotar criaturas hostis e sobreviver até o final dessa exploração junto de seu companheiro.       
- Durante sua jornada, ela encontra uma criatura alienígena amigável que a auxilia na exploração, criando uma dinâmica emocional e estratégica.
+ O jogador controla um jovem astronauta que sofre um pouso forçado em Marte, com recursos limitados, ela precisa explorar o planeta, coletar água e cristais energéticos, derrotar criaturas hostis e sobreviver até o final dessa exploração.       
+ Durante sua jornada, se encontra com criaturas alienígenas raivosas que a atrapalham sua exploração, criando uma dinâmica emocional e estratégica.
 
 ### Project Description (Detailed)
 O jogo se passa após um colapso nuclear global que tornou a Terra inabitável. A humanidade vive em estações orbitais, mas os recursos estão acabando. Marte é a última esperança.
-A protagonista é enviada para uma missão exploratória, mas sua nave sofre uma falha e ela realiza um pouso de emergência. Sozinha e com oxigênio limitado, ela precisa explorar diferentes biomas marcianos.
+O protagonista é enviado para uma missão exploratória, mas sua nave sofre uma falha e realiza um pouso de emergência. Sozinho e com oxigênio limitado, ele precisa explorar diferentes biomas marcianos.
 Os monstros encontrados se adaptam ao ambiente e se replicam. O jogador deve derrotá-los para avançar, conforme as regras do jogo.
-O alien aliado ajuda a desbloquear áreas subterrâneas e acessar recursos raros.
 
 ### What sets this project apart?
-O jogo é baseado em um dinamica com um Alien aliado, diferenciando-o dos outros inimigos extraterrestres, ele é introduzido como um alien não agressivo, dessa forma o jogo tem um impacto de quebra expectativas mais comuns de que todos os aliens sejam maldosos. Ele é mostrado como um sistema de sobrevivência simplificado para mobile, que demonstra uma dinâmica mais fácil de acesso e de jogabilidade, um jogo bem produzido e simples de fácil acesso tem o intuito de agradar mais aqueles que vem a procura de uma jogabilidade que tem objetivo de entreter, sem muita dificuldade e com um jogo produzido para uma história emocional e narrativa envolvente. O objetivo é mostrar a criação de um enlace entre os dois personagens enquanto a história ocorre, mostrando como o alien ajuda a personagem ao longo de toda a jornada.
+O jogo é baseado como um sistema de sobrevivência simplificado para mobile, que demonstra uma dinâmica mais fácil de acesso e de jogabilidade, um jogo bem produzido e simples de fácil acesso tem o intuito de agradar mais aqueles que vem a procura de uma jogabilidade que tem objetivo de entreter, sem muita dificuldade e com um jogo produzido para uma história emocional e narrativa envolvente. O objetivo é mostrar a criação de um enlace entre os dois personagens enquanto a história ocorre, mostrando como os personagens se ajudam ao longo de toda a jornada.
 
 ### Core Gameplay Mechanics (Detailed)
 Começamos com o fator de ser uma **Exploração 2D**, o jogador navega lateralmente por mapas com obstáculos, cavernas e terrenos irregulares, considerando o fato de ser um planeta totalmente diferente com dinâmicas diferentes da terra, a gravidade em Marte é diferente, tornando os movimentos e exploração dos personagens diferentes, a personagem se movimenta de uma forma mais leve, o alien já se movimenta com a mesma velocidade das outras vidas do planeta.
@@ -132,6 +130,3 @@ Lista de som: Ao longo das fases serão necessários sons diferenetes:
 - Ajustes finais;
 - Preparação para a feira;
 - Apresentar e passar com nota 10 =);
-
-
-
