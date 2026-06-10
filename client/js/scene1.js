@@ -1,6 +1,6 @@
-class scene0 extends Phaser.Scene {
+class scene1 extends Phaser.Scene {
   constructor() {
-    super("scene0");
+    super("scene1");
 
     this.threshold = 0.1;
     this.speed = 100;
@@ -10,24 +10,19 @@ class scene0 extends Phaser.Scene {
   }
 
   create() {
-    this.map = this.make.tilemap({ key: "mars" });
+    this.map = this.make.tilemap({ key: "nave" });
 
-    this.tilesetmars = this.map.addTilesetImage("marte");
+    this.tilesetLevel = this.map.addTilesetImage(
+      "level_tileset",
+      "level_tileset",
+    );
 
-    this.layerceu = this.map.createLayer("ceu", [this.tilesetmars]);
-    this.layersol = this.map.createLayer("sol", [this.tilesetmars]);
-    this.layerf4 = this.map.createLayer("f4", [this.tilesetmars]);
-    this.layerf2 = this.map.createLayer("f2", [this.tilesetmars]);
-    this.layerf1 = this.map.createLayer("f1", [this.tilesetmars]);
-    this.layerf5 = this.map.createLayer("f5", [this.tilesetmars]);
-    this.layertub1 = this.map.createLayer("tub1", [this.tilesetmars]);
-    this.layertub2 = this.map.createLayer("tub2", [this.tilesetmars]);
-    this.layerchao = this.map.createLayer("chao", [this.tilesetmars]);
-    this.layerplatf = this.map.createLayer("platf", [this.tilesetmars]);
-    this.layersub1 = this.map.createLayer("sub1", [this.tilesetmars]);
-    this.layersub2 = this.map.createLayer("sub2", [this.tilesetmars]);
+    this.layerFundo = this.map.createLayer("fundo", [this.tilesetLevel]);
+    this.layerTrap = this.map.createLayer("trap", [this.tilesetLevel]);
+    this.layerPlataforma = this.map.createLayer("plataforma", [
+      this.tilesetLevel,
+    ]);
 
-    // Criar animações para o monster também
     this.anims.create({
       key: "monster-standing-still",
       frames: this.anims.generateFrameNumbers("monster", {
@@ -97,26 +92,11 @@ class scene0 extends Phaser.Scene {
 
     this.astronauta.setCollideWorldBounds(true);
 
-    this.layerceu.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.astronauta, this.layerceu);
+    this.layerTrap.setCollisionByProperty({ collides: true });
+    this.physics.add.collider(this.astronauta, this.layerTrap);
 
-    this.layertub1.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.astronauta, this.layertub1);
-
-    this.layertub2.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.astronauta, this.layertub2);
-
-    this.layerchao.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.astronauta, this.layerchao);
-
-    this.layerplatf.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.astronauta, this.layerplatf);
-    this.layerplatf.forEachTile((tile) => {
-      if (tile.properties.collides) {
-        // left, right, up, down
-        tile.setCollision(false, false, true, false);
-      }
-    });
+    this.layerPlataforma.setCollisionByProperty({ collides: true });
+    this.physics.add.collider(this.astronauta, this.layerPlataforma);
 
     this.music = this.sound.add("music", { loop: true }).play();
 
@@ -140,7 +120,6 @@ class scene0 extends Phaser.Scene {
 
       if (this.joystick.force > 0)
         switch (true) {
-          // right
           case this.joystick.angle >= -20 && this.joystick.angle < 20:
             this.astronauta.flipX = false;
             this.astronauta.setVelocityX(200);
@@ -152,7 +131,6 @@ class scene0 extends Phaser.Scene {
               this.astronauta.anims.play("running-right", true);
             }
             break;
-          // left
           case this.joystick.angle >= 160 || this.joystick.angle < -160:
             this.astronauta.flipX = true;
             this.astronauta.setVelocityX(-200);
@@ -180,7 +158,7 @@ class scene0 extends Phaser.Scene {
       })
       .setScrollFactor(0);
 
-    this.game.socket.on("scene0", (state) => {
+    this.game.socket.on("scene1", (state) => {
       if (state.astronauta) {
         try {
           if (state.astronauta.id === this.game.socket.id) return;
@@ -231,14 +209,28 @@ class scene0 extends Phaser.Scene {
     )
       this.astronauta.anims.play("standing-still", true);
 
-    const finishX = this.map.widthInPixels - 64;
-    if (!this.levelComplete && this.astronauta.x >= finishX) {
-      this.completeLevel();
+    if (
+      !this.levelComplete &&
+      this.astronauta.x >= this.map.widthInPixels - 32 &&
+      (this.astronauta.body.blocked.down || this.astronauta.body.blocked.up)
+    ) {
+      this.levelComplete = true;
+      this.music?.stop();
+      this.add.text(
+        this.cameras.main.scrollX + 260,
+        this.cameras.main.scrollY + 200,
+        "Fase 2 concluída!",
+        {
+          fontFamily: "pixelify-sans",
+          fontSize: "32px",
+          fill: "#ffffff",
+        },
+      );
       return;
     }
 
     try {
-      this.game.socket.emit("scene0", this.game.room, {
+      this.game.socket.emit("scene1", this.game.room, {
         astronauta: {
           id: this.game.socket.id,
           x: this.astronauta.x,
@@ -255,23 +247,6 @@ class scene0 extends Phaser.Scene {
     }
   }
 
-  completeLevel() {
-    this.levelComplete = true;
-    this.music?.stop();
-    this.add.text(
-      this.cameras.main.scrollX + 260,
-      this.cameras.main.scrollY + 200,
-      "Fase concluída! Prepare-se para a nave...",
-      {
-        fontFamily: "pixelify-sans",
-        fontSize: "28px",
-        fill: "#ffffff",
-      },
-    );
-    this.game.socket.emit("change-scene", this.game.room, "scene1");
-    this.scene.start("scene1");
-  }
-
   jump(astronauta, gravity) {
     if (gravity > 0)
       if (astronauta.body.blocked.down) {
@@ -284,4 +259,4 @@ class scene0 extends Phaser.Scene {
   }
 }
 
-export default scene0;
+export default scene1;
