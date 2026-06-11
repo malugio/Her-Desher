@@ -21,6 +21,7 @@ class preloader extends Phaser.Scene {
 
     this.load.tilemapTiledJSON("mars", "mars.json");
     this.load.tilemapTiledJSON("nave", "nave.json");
+    this.load.tilemapTiledJSON("fasefinal", "fasefinal.json");
     this.load.spritesheet("astronauta", "astronauta.png", {
       frameWidth: 64,
       frameHeight: 64,
@@ -41,8 +42,9 @@ class preloader extends Phaser.Scene {
     });
 
     this.load.image("marte", "mars-tileset.png");
-    this.load.image("level_tileset", "level_tileset.png");
-
+    this.load.image("tilesetcave", "tilesetcave.png");
+    this.load.image("Tileset_Vine_2", "Tileset_Vine_2.png");
+    this.load.image("Background_Vine_4", "Background_Vine_4.png");
     this.load.image("coin", "coin.png");
 
     this.load.spritesheet("buttons", "buttons.png", {

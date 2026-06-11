@@ -10,37 +10,6 @@ class scene0 extends Phaser.Scene {
     this.currentMonsterIndex = 0; // Começa no primeiro da lista
   }
 
-  preload() {
-    this.load.setPath("assets/");
-    this.load.tilemapTiledJSON("mars", "mars.json");
-
-    this.load.spritesheet("astronauta", "astronauta.png", {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-    // Corrigido para carregar "monster.png" conforme seu preload atual,
-    // mas se o arquivo se chamar "monstro.png", mude a string abaixo para "monstro.png"
-    this.load.spritesheet("monster", "monster.png", {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-
-    this.load.image("marte", "mars-tileset.png");
-
-    this.load.spritesheet("buttons", "buttons.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.audio("music", "music.mp3");
-
-    this.load.plugin(
-      "rexvirtualjoystickplugin",
-      "../js/rexvirtualjoystickplugin.min.js",
-      true,
-    );
-  }
-
   create() {
     this.map = this.make.tilemap({ key: "mars" });
     this.tilesetmars = this.map.addTilesetImage("marte");
