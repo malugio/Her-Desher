@@ -36,7 +36,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("scene0", (room, state) => {
-    socket.to(room).emit("scene0", state);
+    if (state && state.changeScene) {
+      console.log(
+        `Comando recebido na scene0: Mudando sala ${room} para ${state.changeScene}`,
+      );
+
+      // Avisa TODO MUNDO da sala (incluindo quem mandou) para trocar de cena
+      io.to(room).emit("change-scene", state.changeScene);
+    } else {
+      // Se for apenas a movimentação normal, repassa normalmente para os outros
+      socket.to(room).emit("scene0", state);
+    }
   });
 
   socket.on("scene1", (room, state) => {

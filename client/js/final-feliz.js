@@ -2,7 +2,7 @@
 /*eslint no-undef: "error"*/
 export default class finalFeliz extends Phaser.Scene {
   constructor() {
-    super("finalFeliz");
+    super("final-feliz");
   }
 
   create() {

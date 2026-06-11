@@ -58,6 +58,20 @@ class scene0 extends Phaser.Scene {
     this.layersub1 = this.map.createLayer("sub1", [this.tilesetmars]);
     this.layersub2 = this.map.createLayer("sub2", [this.tilesetmars]);
 
+    // Utilitário: retorna o Y (pixel) do topo do tile de chão mais acima no X fornecido
+    const findGroundY = (x, layer) => {
+      for (
+        let yy = 0;
+        yy < this.map.heightInPixels;
+        yy += this.map.tileHeight
+      ) {
+        const tile = layer.getTileAtWorldXY(x, yy, true);
+        if (tile && tile.properties && tile.properties.collides)
+          return tile.pixelY;
+      }
+      return this.map.heightInPixels - 100;
+    };
+
     // Animações do Monstro
     this.anims.create({
       key: "monster-standing-still",
@@ -66,67 +80,72 @@ class scene0 extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Criando o astronauta
+    // Criando o astronauta (posicionado diretamente sobre o chão)
     this.astronauta = this.physics.add.sprite(150, 0, "astronauta", 0);
     this.astronauta.setSize(32, 48);
-this.monsters = this.physics.add.group();
-
-// Lista de posições: O primeiro vai surgir bem mais para a frente (X: 1200 - metade do mapa)
-this.monsterPositions = [1200, 1700, 2200];
-this.currentMonsterIndex = 0;
-this.firstMonsterSpawned = false;
-
-// Função para criar o próximo monstro da lista
-this.spawnNextMonster = () => {
-  if (this.currentMonsterIndex < this.monsterPositions.length) {
-    let spawnX = this.monsterPositions[this.currentMonsterIndex];
-
-    // O monstro já nasce direto no chão (Y: 400 por exemplo, ou 0 para cair)
-    let newMonster = this.monsters.create(spawnX, 500, "monster", 0);
-    newMonster.setSize(32, 48);
-    newMonster.setCollideWorldBounds(true);
-    newMonster.anims.play("monster-standing-still", true);
-    newMonster.speed = 50; // Velocidade ajustada que você gostou
-
-    this.currentMonsterIndex++;
-  }
-};
-
-// --- ADICIONE OS COLISORES DO GRUPO COM O CENÁRIO ---
-// Isso garante que mesmo os monstros criados depois vão colidir com o chão e plataformas
-this.physics.add.collider(this.monsters, this.layerceu);
-this.physics.add.collider(this.monsters, this.layertub1);
-this.physics.add.collider(this.monsters, this.layertub2);
-this.physics.add.collider(this.monsters, this.layerchao);
-this.physics.add.collider(this.monsters, this.layerplatf);
-
-// --- ADICIONE A COLISÃO DO ASTRONAUTA COM OS MONSTROS DO GRUPO ---
-this.physics.add.collider(
-  this.astronauta,
-  this.monsters,
-  (astronauta, monster) => {
-    // Pulo na cabeça elimina o monstro
-    if (astronauta.body.touching.down && monster.body.touching.up) {
-      monster.destroy();
-      astronauta.setVelocityY(-150); // impulso para cima
-      this.spawnNextMonster(); // Nasce o próximo ainda mais para frente
-    } else {
-      // Se tocar pelos lados, o astronauta morre
-      astronauta.setTint(0xff0000);
-      this.physics.pause();
-      this.time.delayedCall(
-        1500,
-        () => {
-          this.scene.restart();
-        },
-        [],
-        this,
-      );
+    if (this.astronauta.body) this.astronauta.body.allowGravity = false;
+    const astronautaGroundY = findGroundY(150, this.layerchao);
+    this.astronauta.setPosition(
+      150,
+      astronautaGroundY - this.astronauta.displayHeight / 2,
+    );
+    if (this.astronauta.body) {
+      this.astronauta.body.allowGravity = true;
+      this.astronauta.setVelocityY(0);
     }
-  },
-  null,
-  this,
-);
+    this.monsters = this.physics.add.group();
+
+    // Lista de posições: O primeiro vai surgir bem mais para a frente (X: 1200 - metade do mapa)
+    this.monsterPositions = [1200, 1700, 2200, 3000, 4000, 5000, 5050];
+    this.currentMonsterIndex = 0;
+    this.firstMonsterSpawned = false;
+
+    // Função para criar o próximo monstro da lista
+    this.spawnNextMonster = () => {
+      if (this.currentMonsterIndex < this.monsterPositions.length) {
+        let spawnX = this.monsterPositions[this.currentMonsterIndex];
+        // Calcula Y do chão no X de spawn (usa utilitário findGroundY)
+        // Cria o monstro sem gravidade, posiciona sobre o chão e reativa gravidade
+        let newMonster = this.monsters.create(spawnX, 0, "monster", 0);
+        newMonster.setSize(32, 48);
+        newMonster.setCollideWorldBounds(true);
+        newMonster.anims.play("monster-standing-still", true);
+        newMonster.speed = 50; // Velocidade ajustada que você gostou
+
+        if (newMonster.body) newMonster.body.allowGravity = false;
+        const groundY = findGroundY(spawnX, this.layerchao);
+        newMonster.setPosition(spawnX, groundY - newMonster.displayHeight / 2);
+        if (newMonster.body) {
+          newMonster.body.allowGravity = true;
+          newMonster.setVelocityY(0);
+        }
+
+        this.currentMonsterIndex++;
+      }
+    };
+
+    // --- ADICIONE OS COLISORES DO GRUPO COM O CENÁRIO ---
+    this.physics.add.collider(this.monsters, this.layerceu);
+    this.physics.add.collider(this.monsters, this.layertub1);
+    this.physics.add.collider(this.monsters, this.layertub2);
+    this.physics.add.collider(this.monsters, this.layerchao);
+    this.physics.add.collider(this.monsters, this.layerplatf);
+
+    this.physics.add.collider(
+      this.astronauta,
+      this.monsters,
+      (astronauta, monster) => {
+        if (astronauta.body.touching.down && monster.body.touching.up) {
+          monster.destroy();
+          astronauta.setVelocityY(-150);
+          this.spawnNextMonster();
+        } else {
+          this.levarDano();
+        }
+      },
+      null,
+      this,
+    );
 
     // Animações do Astronauta
     this.anims.create({
@@ -186,23 +205,18 @@ this.physics.add.collider(
 
     this.astronauta.setCollideWorldBounds(true);
 
-    // ==========================================
-    // CONFIGURANDO COLISÕES (ASTRONAUTA E MONSTRO)
-    // ==========================================
     this.layerceu.setCollisionByProperty({ collides: true });
     this.layertub1.setCollisionByProperty({ collides: true });
     this.layertub2.setCollisionByProperty({ collides: true });
     this.layerchao.setCollisionByProperty({ collides: true });
     this.layerplatf.setCollisionByProperty({ collides: true });
 
-    // Colisores do Astronauta
     this.physics.add.collider(this.astronauta, this.layerceu);
     this.physics.add.collider(this.astronauta, this.layertub1);
     this.physics.add.collider(this.astronauta, this.layertub2);
     this.physics.add.collider(this.astronauta, this.layerchao);
     this.physics.add.collider(this.astronauta, this.layerplatf);
 
-    // Colisores do Monstro (para eles não caírem do mapa) - usar o grupo
     this.physics.add.collider(this.monsters, this.layerceu);
     this.physics.add.collider(this.monsters, this.layertub1);
     this.physics.add.collider(this.monsters, this.layertub2);
@@ -214,19 +228,80 @@ this.physics.add.collider(
         tile.setCollision(false, false, true, false);
       }
     });
+   
+    this.pontos = 0;
+    
+    this.iconeMoeda = this.add.image(45, 35, "coin");
+    this.iconeMoeda.setScale(1.2);
+    this.iconeMoeda.setScrollFactor(0);
+    this.iconeMoeda.setDepth(2000);
 
-    // ==========================================
-    // NOVA ADIÇÃO: COLISÃO/ATAQUE DO MONSTRO NO JOGADOR
-    // ==========================================
+    // Texto mostrando a quantidade de moedas
+    this.textoPontos = this.add.text(100, 22, "0", {
+      fontSize: "36px",
+      fill: "#ffffff",
+      fontFamily: "Arial",
+    });
+    this.textoPontos.setScrollFactor(0);
+    this.textoPontos.setDepth(2000);
+    
+    this.coins = this.physics.add.staticGroup();
+this.coins.create(300, 500, "coin");
+this.coins.create(450, 460, "coin");
+this.coins.create(600, 450, "coin");
+this.coins.create(750, 460, "coin");
+this.coins.create(900, 500, "coin");
+
+// Parte inicial
+this.coins.create(1100, 480, "coin");
+this.coins.create(1300, 420, "coin");
+this.coins.create(1500, 420, "coin");
+this.coins.create(1700, 500, "coin");
+this.coins.create(1900, 460, "coin");
+
+// Meio da fase
+this.coins.create(2100, 480, "coin");
+this.coins.create(2200, 450, "coin");
+this.coins.create(2400, 420, "coin");
+this.coins.create(2600, 450, "coin");
+this.coins.create(2800, 500, "coin");
+this.coins.create(3000, 480, "coin");
+
+// Depois do meio
+this.coins.create(3200, 430, "coin");
+this.coins.create(3400, 400, "coin");
+this.coins.create(3600, 430, "coin");
+this.coins.create(3800, 480, "coin");
+this.coins.create(4000, 500, "coin");
+
+// Parte avançada
+this.coins.create(4200, 460, "coin");
+this.coins.create(4400, 420, "coin");
+this.coins.create(4600, 420, "coin");
+this.coins.create(4800, 460, "coin");
+this.coins.create(5000, 500, "coin");
+
+// Perto do final
+this.coins.create(5150, 500, "coin");
+this.coins.create(5300, 470, "coin");
+this.coins.create(5450, 440, "coin");
+this.coins.create(5600, 400, "coin");
+this.coins.create(5750, 440, "coin");
+this.coins.create(5900, 470, "coin");
+this.coins.create(6000, 500, "coin");
+    this.coins.children.iterate((coin) => {
+      coin.setScale(0.5);
+      coin.refreshBody();
+       coin.setDepth(1000);
+    });
+
     this.physics.add.overlap(
       this.astronauta,
-      this.monsters,
-      this.hitPlayer,
+      this.coins,
+      this.pegarMoeda,
       null,
       this,
     );
-
-    // Som e Joystick
     this.music = this.sound.add("music", { loop: true }).play();
 
     this.joystick = this.plugins.get("rexvirtualjoystickplugin").add(this, {
@@ -285,7 +360,15 @@ this.physics.add.collider(
       })
       .setScrollFactor(0);
 
-    // Socket (Multiplayer)
+    this.vidaMaxima = 4;
+    this.vidaAtual = 4;
+    this.podeTomarDano = true;
+
+    this.hudVida = this.add.image(100, 80, "vida_cheia"); // <-- Faltou o ponto e vírgula ";"
+    this.hudVida.setScrollFactor(0); // <--- O ERRO ESTÁ AQUI!
+    this.hudVida.setDepth(2000);
+    this.hudVida.setScale(1.5);
+
     this.game.socket.on("scene0", (state) => {
       if (state.astronauta) {
         try {
@@ -296,33 +379,37 @@ this.physics.add.collider(
           );
 
           if (!remotePlayer) {
-            remotePlayer = this.add.sprite(
+            let remoteSprite = this.add.sprite(
               state.astronauta.x,
               state.astronauta.y,
               "alien",
               0,
             );
-            this.remotePlayers.push({
+            remotePlayer = {
               id: state.astronauta.id,
-              sprite: remotePlayer,
-            });
+              sprite: remoteSprite,
+            };
+            this.remotePlayers.push(remotePlayer);
           }
 
-          remotePlayer.sprite.setPosition(
-            state.astronauta.x,
-            state.astronauta.y,
-          );
-          remotePlayer.sprite.setTexture(
-            state.astronauta.texture,
-            state.astronauta.frame,
-          );
+          // Só altera a posição se o sprite realmente existir na tela
+          if (remotePlayer && remotePlayer.sprite) {
+            remotePlayer.sprite.setPosition(
+              state.astronauta.x,
+              state.astronauta.y,
+            );
+            remotePlayer.sprite.setTexture(
+              state.astronauta.texture,
+              state.astronauta.frame,
+            );
+          }
         } catch (e) {
           console.log(this.remotePlayers);
           console.error("Error updating remote player:", e);
         }
       }
     });
-  }
+  } // Fim do método create()
 
   update() {
     // Animação padrão de parado do astronauta
@@ -332,56 +419,65 @@ this.physics.add.collider(
       (this.astronauta.body.blocked.down || this.astronauta.body.blocked.up)
     )
       this.astronauta.anims.play("standing-still", true);
-    
+
+    // Morte por queda em buraco
     if (this.astronauta && this.astronauta.y > 760) {
-      // Pinta o personagem de vermelho para indicar a morte
       this.astronauta.setTint(0xff0000);
-  
-      // Pausa as físicas do jogo para ele parar de cair no infinito
       this.physics.pause();
-  
+
+      if (this.music) this.sound.stopAll();
+
       console.log("O astronauta caiu no buraco!");
 
-      // Aguarda 1.5 segundos e reinicia a fase
-      this.time.delayedCall(1500, () => {
-        this.scene.restart();
-      }, [], this);
-  
+      this.time.delayedCall(
+        1000,
+        () => {
+          this.scene.start("GameOver");
+        },
+        [],
+        this,
+      );
+
       return;
     }
 
-if (this.astronauta && this.astronauta.x > 800 && !this.firstMonsterSpawned) {
-  this.firstMonsterSpawned = true;
-  this.spawnNextMonster(); // Cria o monstro em X: 1200
-  console.log("Gatilho ativado! Primeiro monstro apareceu na metade do caminho.");
-}
-
-if (this.monsters && this.monsters.getLength() > 0) {
-  this.monsters.children.iterate((monster) => {
-    if (monster && this.astronauta) {
-      
-      // Inteligência de seguir o astronauta
-      if (this.astronauta.x > monster.x + 10) {
-        monster.setVelocityX(monster.speed);
-        monster.flipX = false;
-      } 
-      else if (this.astronauta.x < monster.x - 10) {
-        monster.setVelocityX(-monster.speed);
-        monster.flipX = true;
-      } 
-      else {
-        monster.setVelocityX(0);
-      }
-
-      // Inteligência de pular paredes/obstáculos
-      if ((monster.body.blocked.left || monster.body.blocked.right) && monster.body.blocked.down) {
-        monster.setVelocityY(-150); 
-      }
+    if (
+      this.astronauta &&
+      this.astronauta.x > 800 &&
+      !this.firstMonsterSpawned
+    ) {
+      this.firstMonsterSpawned = true;
+      this.spawnNextMonster();
+      console.log(
+        "Gatilho ativado! Primeiro monstro apareceu na metade do caminho.",
+      );
     }
-  });
-}
 
-    
+    if (this.monsters && this.monsters.getLength() > 0) {
+      this.monsters.children.iterate((monster) => {
+        if (monster && this.astronauta) {
+          // Inteligência de seguir o astronauta
+          if (this.astronauta.x > monster.x + 10) {
+            monster.setVelocityX(monster.speed);
+            monster.flipX = false;
+          } else if (this.astronauta.x < monster.x - 10) {
+            monster.setVelocityX(-monster.speed);
+            monster.flipX = true;
+          } else {
+            monster.setVelocityX(0);
+          }
+
+          // Inteligência de pular paredes/obstáculos
+          if (
+            (monster.body.blocked.left || monster.body.blocked.right) &&
+            monster.body.blocked.down
+          ) {
+            monster.setVelocityY(-150);
+          }
+        }
+      });
+    }
+
     // Enviar atualização do jogador local para o socket
     try {
       this.game.socket.emit("scene0", this.game.room, {
@@ -401,6 +497,29 @@ if (this.monsters && this.monsters.getLength() > 0) {
     } catch (e) {
       console.error("Error updating astronauta:", e);
     }
+
+    const larguraRealDoMundo = this.physics.world.bounds.width;
+    if (this.astronauta && this.astronauta.x >= 6600) {
+      this.astronauta.setVelocity(0, 0);
+      if (this.astronauta.body) {
+        this.astronauta.body.allowGravity = false; // Desliga a gravidade temporariamente
+      }
+
+      if (this.music) this.sound.stopAll(); // Para a música da Fase 0
+      console.log("Astronauta chegou ao fim! Mudando para a scene1...");
+
+      try {
+        this.game.socket.emit("scene0", this.game.room, {
+          changeScene: "scene1",
+        });
+      } catch (e) {
+        console.error("Erro ao emitir mudança de cena pelo socket:", e);
+      }
+
+      this.scene.stop("scene0");
+      this.scene.start("scene1");
+      return;
+    }
   }
 
   jump(astronauta, gravity) {
@@ -414,25 +533,61 @@ if (this.monsters && this.monsters.getLength() > 0) {
       }
   }
 
-  // ==========================================
-  // NOVA FUNÇÃO: O QUE ACONTECE QUANDO O MONSTRO PEGA O JOGADOR
-  // ==========================================
-  hitPlayer(astronauta, monster) {
-    // Pausa a física do astronauta para fingir que morreu
-    astronauta.setTint(0xff0000); // Fica vermelho ao morrer
-    this.physics.pause();
+  levarDano() {
+    // Se o jogador acabou de tomar dano e está piscando, ignora novos golpes
+    if (!this.podeTomarDano) return;
 
-    console.log("O astronauta morreu!");
+    this.vidaAtual--;
+    this.podeTomarDano = false;
 
-    // Reinicia a fase após 1.5 segundos
-    this.time.delayedCall(
-      1500,
-      () => {
-        this.scene.restart();
-      },
-      [],
-      this,
-    );
+    // Deixa o astronauta vermelho temporariamente
+    this.astronauta.setTint(0xff0000);
+
+    // Atualiza qual imagem de coração vai aparecer na tela (Baseado em 4 vidas)
+    if (this.vidaAtual === 3 || this.vidaAtual === 2) {
+      this.hudVida.setTexture("vida_media"); // Mostra h11.png (metade)
+    } else if (this.vidaAtual === 1) {
+      this.hudVida.setTexture("vida_baixa"); // Mostra h1.png (1 coração)
+    }
+
+    // Se as vidas acabarem, aí sim dá Game Over
+    if (this.vidaAtual <= 0) {
+      this.physics.pause();
+      if (this.music) this.sound.stopAll();
+      console.log("O astronauta ficou sem vidas!");
+
+      this.time.delayedCall(
+        1000,
+        () => {
+          this.scene.start("GameOver");
+        },
+        [],
+        this,
+      );
+    } else {
+      // Se ainda tem vida, espera 1 segundo (piscando), limpa a cor e permite tomar dano de novo
+      this.time.delayedCall(
+        1000,
+        () => {
+          if (this.astronauta) {
+            this.astronauta.clearTint();
+          }
+          this.podeTomarDano = true;
+        },
+        [],
+        this,
+      );
+    }
+  }
+
+  pegarMoeda(astronauta, coin) {
+    coin.destroy();
+
+    this.pontos = this.pontos + 1;
+
+    this.textoPontos.setText("x " + this.pontos);
+
+    console.log("Pegou uma moeda! Total:", this.pontos);
   }
 }
 
