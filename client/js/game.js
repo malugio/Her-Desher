@@ -38,22 +38,13 @@ class Game extends Phaser.Game {
           ? activeScenes[0].scene.key
           : null;
 
-       if (scene === "final-feliz" || scene === "finalFeliz") {
-         console.log("Redirecionando para a cena de premiação...");
-         if (currentScene) {
-           game.scene.stop(currentScene);
-         }
-         // Garante o início da cena correta usando a referência salva
-         game.scene.start("final-feliz");
-       }
-       // Caso seja outra cena qualquer vinda do servidor
-       else if (currentScene !== scene) {
-         console.log("Changing scene to:", scene);
-         if (currentScene) {
-           game.scene.stop(currentScene);
-         }
-         game.scene.start(scene);
-       }
+        if (currentScene !== scene) {
+          console.log("Changing scene to:", scene);
+          if (currentScene) {
+            this.scene.stop(currentScene);
+          }
+          this.scene.start("final-feliz");
+        }
       });
     });
   }

@@ -69,7 +69,7 @@ class scene0 extends Phaser.Scene {
       key: "monster-standing-right",
       frames: this.anims.generateFrameNumbers("monster", {
         start: 12,
-        end: 19,
+        end: 10,
       }),
       frameRate: 5,
       repeat: -1,
@@ -518,8 +518,7 @@ this.coins.create(6000, 500, "coin");
     if (this.astronauta && this.astronauta.x >= 6600) {
       this.astronauta.setVelocity(0, 0);
       if (this.astronauta.body) {
-        this.astronauta.body.allowGravity = false;
-        this.socket.emit("scene0", room, { changeScene: "final-feliz" });// Desliga a gravidade temporariamente
+        this.astronauta.body.allowGravity = false; // Desliga a gravidade temporariamente
       }
 
       //if (this.music) this.sound.stopAll(); // Para a música da Fase 0
