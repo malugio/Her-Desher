@@ -4,7 +4,6 @@ import preloader from "./preloader.js";
 import room from "./room.js";
 import player from "./player.js";
 import scene0 from "./scene0.js";
-import scene1 from "./scene1.js";
 import gameOver from "./gameOver.js";
 import finalFeliz from "./final-feliz.js";
 
@@ -17,7 +16,7 @@ class Game extends Phaser.Game {
     this.scene.add("room", room);
     this.scene.add("player", player);
     this.scene.add("scene0", scene0);
-    this.scene.add("scene1", scene1);
+    //this.scene.add("scene1", scene1);//
     this.scene.add("final-feliz", finalFeliz);
     this.scene.add("GameOver", gameOver);
     this.scene.start("start");
@@ -45,6 +44,9 @@ class Game extends Phaser.Game {
             this.scene.stop(currentScene);
           }
           this.scene.start(scene);
+          this.scene.stop();
+          this.scene.start("final-feliz");
+
         }
       });
     });

@@ -16,14 +16,14 @@ class player extends Phaser.Scene {
 
     this.anims.create({
       key: "astronauta",
-      frames: this.anims.generateFrameNumbers("astronauta", { start: 0, end: 5 }),
+      frames: this.anims.generateFrameNumbers("astronauta", { start: 3, end: 8 }),
       frameRate: 10,
       repeat: -1,
     });
 
     this.anims.create({
-      key: "alien",
-      frames: this.anims.generateFrameNumbers("alien", {start: 23, end: 27, }),
+      key: "astronauta",
+      frames: this.anims.generateFrameNumbers("alien", {start: 3, end: 8, }),
       frameRate: 10,
       repeat: -1,
     });
@@ -45,13 +45,13 @@ class player extends Phaser.Scene {
       });
     this.astronauta.play("astronauta");
 
-    this.alien = this.add
-      .sprite(550, 225, "alien")
+    this.astronauta = this.add
+      .sprite(550, 225, "astronauta")
       .setScale(3)
       .setInteractive()
       .on("pointerdown", () => {
-        console.log("alien player selected");
-        this.game.localPlayer = "alien";
+        console.log("astronauta player selected");
+        this.game.localPlayer = "astronauta";
         this.game.socket.emit(
           "select-player",
           this.game.room,
@@ -60,7 +60,7 @@ class player extends Phaser.Scene {
         this.scene.stop("player");
         this.scene.start("scene0");
       });
-    this.alien.play("alien");
+    this.astronauta.play("astronauta");
   }
 }
 

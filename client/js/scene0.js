@@ -6,7 +6,7 @@ class scene0 extends Phaser.Scene {
     this.direction = undefined;
     this.remotePlayers = [];
 
-    this.monsterPositions = [600, 1100, 1600, 2100];
+    this.monsterPositions = [600, 1100, 1600, 2100, 2600, 3100, 3600, 4100, 4600, 5100, 5600];
     this.currentMonsterIndex = 0; // Começa no primeiro da lista
   }
 
@@ -44,11 +44,36 @@ class scene0 extends Phaser.Scene {
     // Animações do Monstro
     this.anims.create({
       key: "monster-standing-still",
-      frames: this.anims.generateFrameNumbers("monster", { start: 0, end: 0 }),
+      frames: this.anims.generateFrameNumbers("monster", { start: 0, end: 1 }),
       frameRate: 5,
       repeat: -1,
     });
 
+
+    this.anims.create({
+      key: "monster-running-left",
+      frames: this.anims.generateFrameNumbers("monster", { start: 2, end: 9 }),
+      frameRate: 5,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "monster-standing-right",
+      frames: this.anims.generateFrameNumbers("monster", { start: 10, end: 10 }),
+      frameRate: 5,
+      repeat: -1,
+    });
+
+
+    this.anims.create({
+      key: "monster-standing-right",
+      frames: this.anims.generateFrameNumbers("monster", {
+        start: 12,
+        end: 19,
+      }),
+      frameRate: 5,
+      repeat: -1,
+    });
     // Criando o astronauta (posicionado diretamente sobre o chão)
     this.astronauta = this.physics.add.sprite(150, 0, "astronauta", 0);
     this.astronauta.setSize(32, 48);
@@ -65,7 +90,7 @@ class scene0 extends Phaser.Scene {
     this.monsters = this.physics.add.group();
 
     // Lista de posições: O primeiro vai surgir bem mais para a frente (X: 1200 - metade do mapa)
-    this.monsterPositions = [1200, 1700, 2200, 3000, 4000, 5000, 5050];
+    this.monsterPositions = [1200, 1700, 2200, 3000, 4000, 5000, 5050, 5100, 5150, 5200, 5250, 5300, 5350, 5400, 5450, 5500, 5550, 5600, 5650, 5700, 5750, 5800, 5850];
     this.currentMonsterIndex = 0;
     this.firstMonsterSpawned = false;
 
@@ -121,7 +146,7 @@ class scene0 extends Phaser.Scene {
       key: "standing-still",
       frames: this.anims.generateFrameNumbers("astronauta", {
         start: 0,
-        end: 0,
+        end: 2,
       }),
       frameRate: 5,
       repeat: -1,
@@ -130,32 +155,54 @@ class scene0 extends Phaser.Scene {
     this.anims.create({
       key: "running-right",
       frames: this.anims.generateFrameNumbers("astronauta", {
-        start: 19,
-        end: 26,
+        start: 3,
+        end: 12,
       }),
       frameRate: 10,
       repeat: -1,
     });
+
+
+    this.anims.create({
+      key: "standing-still",
+      frames: this.anims.generateFrameNumbers("astronauta", {
+        start: 0,
+        end: 2,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    })
 
     this.anims.create({
       key: "running-left",
       frames: this.anims.generateFrameNumbers("astronauta", {
-        start: 11,
-        end: 19,
+        start: 33,
+        end: 42,
       }),
       frameRate: 10,
       repeat: -1,
     });
 
     this.anims.create({
-      key: "jumping",
+      key: "jumping-right",
       frames: this.anims.generateFrameNumbers("astronauta", {
-        start: 3,
-        end: 10,
+        start: 13,
+        end: 22,
       }),
       frameRate: 10,
       repeat: -1,
     });
+
+     this.anims.create({
+       key: "jumping-left",
+       frames: this.anims.generateFrameNumbers("astronauta", {
+         start: 23,
+         end: 31,
+       }),
+       frameRate: 10,
+       repeat: -1,
+     });
+
 
     // Configurações do Mundo e Câmera
     this.physics.world.setBounds(
@@ -412,7 +459,7 @@ this.coins.create(6000, 500, "coin");
 
     if (
       this.astronauta &&
-      this.astronauta.x > 800 &&
+      this.astronauta.x > 700 &&
       !this.firstMonsterSpawned
     ) {
       this.firstMonsterSpawned = true;
@@ -474,22 +521,21 @@ this.coins.create(6000, 500, "coin");
         this.astronauta.body.allowGravity = false; // Desliga a gravidade temporariamente
       }
 
-      if (this.music) this.sound.stopAll(); // Para a música da Fase 0
-      console.log("Astronauta chegou ao fim! Mudando para a scene1...");
-
-      try {
-        this.game.socket.emit("scene0", this.game.room, {
-          changeScene: "scene1",
-        });
-      } catch (e) {
-        console.error("Erro ao emitir mudança de cena pelo socket:", e);
+      //if (this.music) this.sound.stopAll(); // Para a música da Fase 0
+     // console.log("Astronauta chegou ao fim! Mudando para a scene1...");//
+      //try {
+       // this.game.socket.emit("scene0", this.game.room, {
+          //changeScene: "scene1",
+       // });//
+     // } catch (e) {
+     //   console.error("Erro ao emitir mudança de cena pelo socket:", e);
       }
 
-      this.scene.stop("scene0");
-      this.scene.start("scene1");
-      return;
+     // this.scene.stop("scene0");
+     // this.scene.start("scene1");
+     // return;
     }
-  }
+  
 
   jump(astronauta, gravity) {
     if (gravity > 0)

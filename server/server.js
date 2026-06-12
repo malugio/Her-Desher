@@ -49,9 +49,9 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("scene1", (room, state) => {
-    socket.to(room).emit("scene1", state);
-  });
+ // socket.on("scene1", (room, state) => {
+   // socket.to(room).emit("scene1", state);
+ // });
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
