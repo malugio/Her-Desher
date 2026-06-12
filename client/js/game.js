@@ -43,7 +43,7 @@ class Game extends Phaser.Game {
           if (currentScene) {
             this.scene.stop(currentScene);
           }
-          this.scene.start(scene);
+          this.scene.start(scene0);
           this.scene.stop();
           this.scene.start("final-feliz");
 
