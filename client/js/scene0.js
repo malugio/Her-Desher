@@ -520,20 +520,26 @@ this.coins.create(6000, 500, "coin");
       if (this.astronauta.body) {
         this.astronauta.body.allowGravity = false; // Desliga a gravidade temporariamente
       }
-
-      //if (this.music) this.sound.stopAll(); // Para a música da Fase 0
-     // console.log("Astronauta chegou ao fim! Mudando para a scene1...");//
-      //try {
-       // this.game.socket.emit("scene0", this.game.room, {
-          //changeScene: "scene1",
-       // });//
-     // } catch (e) {
-     //   console.error("Erro ao emitir mudança de cena pelo socket:", e);
+      if (this.music) {
+        this.sound.stopAll();
       }
 
-     // this.scene.stop("scene0");
-     // this.scene.start("scene1");
-     // return;
+      console.log("Astronauta chegou ao fim! Mudando para o final feliz...");
+
+      // 2. (Opcional) Avisa o servidor via socket que mudou de cena
+      try {
+        this.game.socket.emit("scene0", this.game.room, {
+          changeScene: "final-feliz",
+        });
+      } catch (e) {
+        console.error("Erro ao emitir mudança de cena pelo socket:", e);
+      }
+
+      // 3. FAZ A TRANSIÇÃO LOCAL EFETIVAMENTE
+      this.scene.stop("scene0");
+      this.scene.start("final-feliz");
+      return;
+    }
     }
   
 

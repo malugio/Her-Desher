@@ -38,12 +38,13 @@ class Game extends Phaser.Game {
           ? activeScenes[0].scene.key
           : null;
 
-        if (currentScene !== scene0) {
-          console.log("Changing scene to:", final-feliz);
+        if (currentScene !== scene) {
+          console.log("Changing scene to:", scene);
           if (currentScene) {
             this.scene.stop(currentScene);
           }
           this.scene.start("final-feliz");
+
         }
       });
     });
