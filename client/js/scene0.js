@@ -385,46 +385,49 @@ this.coins.create(6000, 500, "coin");
     this.hudVida.setDepth(2000);
     this.hudVida.setScale(1.5);
 
-    this.game.socket.on("scene0", (state) => {
-      if (state.astronauta) {
-        try {
-          if (state.astronauta.id === this.game.socket.id) return;
+    // Localize este bloco no final do seu create() e substitua por este corrigido:
+this.game.socket.on("scene0", (state) => {
+  // Se a cena atual não estiver mais ativa ou rodando, ignora o evento para não quebrar
+  if (!this.scene.isActive("scene0")) return;
 
-          let remotePlayer = this.remotePlayers.find(
-            (p) => p.id === state.astronauta.id,
-          );
+  if (state.astronauta) {
+    try {
+      if (state.astronauta.id === this.game.socket.id) return;
 
-          if (!remotePlayer) {
-            let remoteSprite = this.add.sprite(
-              state.astronauta.x,
-              state.astronauta.y,
-              "alien",
-              0,
-            );
-            remotePlayer = {
-              id: state.astronauta.id,
-              sprite: remoteSprite,
-            };
-            this.remotePlayers.push(remotePlayer);
-          }
+      let remotePlayer = this.remotePlayers.find(
+        (p) => p.id === state.astronauta.id,
+      );
 
-          // Só altera a posição se o sprite realmente existir na tela
-          if (remotePlayer && remotePlayer.sprite) {
-            remotePlayer.sprite.setPosition(
-              state.astronauta.x,
-              state.astronauta.y,
-            );
-            remotePlayer.sprite.setTexture(
-              state.astronauta.texture,
-              state.astronauta.frame,
-            );
-          }
-        } catch (e) {
-          console.log(this.remotePlayers);
-          console.error("Error updating remote player:", e);
-        }
+      if (!remotePlayer) {
+        let remoteSprite = this.add.sprite(
+          state.astronauta.x,
+          state.astronauta.y,
+          "alien",
+          0,
+        );
+        remotePlayer = {
+          id: state.astronauta.id,
+          sprite: remoteSprite,
+        };
+        this.remotePlayers.push(remotePlayer);
       }
-    });
+
+      // Só altera se o sprite existir E a cena estiver ativa
+      if (remotePlayer && remotePlayer.sprite && remotePlayer.sprite.active) {
+        remotePlayer.sprite.setPosition(
+          state.astronauta.x,
+          state.astronauta.y,
+        );
+        remotePlayer.sprite.setTexture(
+          state.astronauta.texture,
+          state.astronauta.frame,
+        );
+      }
+    } catch (e) {
+      console.error("Error updating remote player:", e);
+    }
+  }
+}); // Tiramos o perigo de atualizar coisas com a cena fechada!
   } // Fim do método create()
 
   update() {
@@ -535,7 +538,8 @@ this.coins.create(6000, 500, "coin");
         console.error("Erro ao emitir mudança de cena pelo socket:", e);
       }
 
-      // 3. FAZ A TRANSIÇÃO LOCAL EFETIVAMENTE
+      this.game.socket.off("scene0");
+
       this.scene.stop("scene0");
       this.scene.start("final-feliz");
       return;
